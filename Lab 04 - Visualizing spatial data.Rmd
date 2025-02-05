@@ -21,23 +21,41 @@ states <- read_csv("data/states.csv")
 "What are the dimensions of the Denny’s dataset? (Hint: Use inline R code and functions like nrow and ncol to compose your answer.) What does each row in the dataset represent? What are the variables?"
 
 ```{r ex1_dannysdataset_dimensions}
-names(states)
 
+glimpse(dennys)
+
+nrow(dennys)
+ncol(dennys)
 
 ```
+There are 1,643 rows in the Dennys dataset which represents individual Dennys locations. There are 6 columns which represents the variables that describe the location.
 
 ### Exercise 2
 
-Remove this text, and add your answer for Exercise 2 here.
-Add code chunks as needed.
-Don't forget to label your code chunk.
-Do not use spaces in code chunk labels.
+"What are the dimensions of the La Quinta’s dataset? What does each row in the dataset represent? What are the variables?"
+
+``` {r ex2_laquinta_dim}
+
+glimpse(laquinta)
+
+nrow(laquinta)
+ncol(laquinta)
+
+
+```
+There are 909 rows in the La Quinta dataset which represent individual La Quintas. There are 6 columns that represent the variables that describe the location of each hotel.
+
 
 ### Exercise 3
 
+Looking at the webpages, I saw that there are no Dennys outside of the United States while there are La Quintas outside of the United States.
+
+This includes locations Canada, Mexico, China, New Zealand, Turkey, UAE, Chile, Colombia, and Ecuador.
 ...
 
 ### Exercise 4
+
+Filtering using the state variable might be the best way to tell if there are locations outside of the US because as far as I can tell these are unique to America. For a rough method maybe you could set a boundary with the lines of longitude and latitude but I don't know if that would be precise enough to capture the entire United states and not accidentally include hotels in Mexico or Canada.
 
 ...
 
