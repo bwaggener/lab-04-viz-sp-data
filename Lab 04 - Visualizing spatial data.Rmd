@@ -61,6 +61,15 @@ Filtering using the state variable might be the best way to tell if there are lo
 
 ### Exercise 5
 
+"Find the Denny’s locations that are outside the US, if any. To do so, filter the Denny’s locations for observations where state is not in states$abbreviation. The code for this is given below. Note that the %in% operator matches the states listed in the state variable to those listed in states$abbreviation. The ! operator means not. Are there any Denny’s locations outside the US?"
+
+``` {r ex5_dennysloc}
+
+dennys %>%
+  filter(!(state %in% states$abbreviation))
+
+```
+
 ...
 
 ### Exercise 6
