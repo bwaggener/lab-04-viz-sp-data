@@ -69,13 +69,93 @@ dennys %>%
   filter(!(state %in% states$abbreviation))
 
 ```
-
+There are no Denny's locations outside of the US.
 ...
 
 ### Exercise 6
+"Add a country variable to the Denny’s dataset and set all observations equal to "United States". Remember, you can use the mutate function for adding a variable. Make sure to save the result of this as dn again so that the stored data frame contains the new variable going forward."
 
-...
+```{r ex6_country}
+dn <- dennys %>%
+  mutate(country = "United States")
 
+```
  
-Add exercise headings as needed.
+### Exercise 7
+"Find the La Quinta locations that are outside the US, and figure out which country they are in. This might require some googling. Take notes, you will need to use this information in the next exercise."
+
+Using this website https://www.wyndhamhotels.com/laquinta/locations i was able to find all of the La Quinta locations outside of the US. They are in Canada, Mexico, China, New Zealand, Turkey, UAE, Chile, Colombia, and Ecuador.
+
+### Exercise 8
+"Add a country variable to the La Quinta dataset. Use the case_when function to populate this variable. You’ll need to refer to your notes from Exercise 7 about which country the non-US locations are in."
+```{r ex8_lq_country}
+lq <- laquinta %>%
+  mutate(country = case_when(
+    state %in% state.abb ~ "United States",
+    state %in% c("ON", "BC") ~ "Canada",
+    state == "ANT" ~ "Colombia",
+    city == "Oshawa" ~ "Canada",
+   state %in% c("CH", "AG", "SL") ~ "Mexico",
+   city == "San Luis Potosi" ~ "Mexico",
+    city == "Ciudad Juarez" ~ "Mexico",  
+    city == "Poza Rica" ~ "Mexico",
+    city == "Puebla" ~ "Mexico",
+     city == "Reynosa" ~ "Mexico",
+     city == "San Jose Chiapa" ~ "Mexico",
+     city == "Col Partido Iglesias Juarez" ~ "Mexico",  
+    city == "Qionghai" ~ "China",
+    city == "Taiyuan" ~ "China",
+    city == "Weifang" ~ "China",
+    city == "Zunyi" ~ "China",
+    city == "Auckland" ~ "New Zealand",
+    city == "Queenstown" ~ "New Zealand",
+    city == "Bodrum" ~ "Turkey",
+    city == "Cesme" ~ "Turkey",
+    city == "Giresun" ~ "Turkey",
+    city == "Istanbul" ~ "Turkey",
+    city == "Abu Dhabi" ~ "UAE",
+    city == "Dubai" ~ "UAE",
+    city == "Santiago" ~ "Chile",
+    city == "Medellin" ~ "Colombia",
+    city == "Quito" ~ "Ecuador",
+    TRUE ~ NA_character_
+  ))
+    
+
+```
+
+prep for ex 9
+filtering out non US hotels
+```{r lq_US_filter}
+lq <- lq %>%
+  filter(country == "United States")
+```
+
+### Exercise 9
+"Which states have the most and fewest Denny’s locations? What about La Quinta? Is this surprising? Why or why not?"
+
+```{r ex9_most_fewest_dn_lq}
+dn %>%
+  count(state) %>%
+  arrange(desc(n))
+
+lq %>%
+  count(state) %>%
+  arrange(desc(n))
+```
+
+Prep for exercise 10
+"Next, let’s calculate which states have the most Denny’s locations per thousand square miles. This requires joinining information from the frequency tables you created in the previous set with information from the states data frame.
+
+First, we count how many observations are in each state, which will give us a data frame with two variables: state and n. Then, we join this data frame with the states data frame. However note that the variables in the states data frame that has the two-letter abbreviations is called abbreviation. So when we’re joining the two data frames we specify that the state variable from the Denny’s data should be matched by the abbreviation variable from the states data"
+
+```{r join_dn_states}
+dn %>%
+  count(state) %>%
+  inner_join(states, by = c("state" = "abbreviation"))
+
+lq %>%
+  count(state) %>%
+  inner_join(states, by = c("state" = "abbreviation"))
+```
 
