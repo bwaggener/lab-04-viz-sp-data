@@ -7,8 +7,18 @@ Ben Waggener
 
 ``` r
 library(tidyverse) 
-library(dsbox) 
 ```
+
+    ## Warning: package 'tidyverse' was built under R version 4.4.3
+
+    ## Warning: package 'purrr' was built under R version 4.4.3
+
+``` r
+library(dsbox) 
+library(viridis)
+```
+
+    ## Warning: package 'viridis' was built under R version 4.4.3
 
 ``` r
 states <- read_csv("data/states.csv")
@@ -119,10 +129,273 @@ dennys %>%
     ## # ℹ 6 variables: address <chr>, city <chr>, state <chr>, zip <chr>,
     ## #   longitude <dbl>, latitude <dbl>
 
-…
+There are no Denny’s locations outside of the US. …
 
 ### Exercise 6
 
-…
+“Add a country variable to the Denny’s dataset and set all observations
+equal to”United States”. Remember, you can use the mutate function for
+adding a variable. Make sure to save the result of this as dn again so
+that the stored data frame contains the new variable going forward.”
 
-Add exercise headings as needed.
+``` r
+dn <- dennys %>%
+  mutate(country = "United States")
+```
+
+### Exercise 7
+
+“Find the La Quinta locations that are outside the US, and figure out
+which country they are in. This might require some googling. Take notes,
+you will need to use this information in the next exercise.”
+
+Using this website <https://www.wyndhamhotels.com/laquinta/locations> i
+was able to find all of the La Quinta locations outside of the US. They
+are in Canada, Mexico, China, New Zealand, Turkey, UAE, Chile, Colombia,
+and Ecuador.
+
+### Exercise 8
+
+“Add a country variable to the La Quinta dataset. Use the case_when
+function to populate this variable. You’ll need to refer to your notes
+from Exercise 7 about which country the non-US locations are in.”
+
+``` r
+lq <- laquinta %>%
+  mutate(country = case_when(
+    state %in% state.abb ~ "United States",
+    state %in% c("ON", "BC") ~ "Canada",
+    state == "ANT" ~ "Colombia",
+    city == "Oshawa" ~ "Canada",
+   state %in% c("CH", "AG", "SL") ~ "Mexico",
+   city == "San Luis Potosi" ~ "Mexico",
+    city == "Ciudad Juarez" ~ "Mexico",  
+    city == "Poza Rica" ~ "Mexico",
+    city == "Puebla" ~ "Mexico",
+     city == "Reynosa" ~ "Mexico",
+     city == "San Jose Chiapa" ~ "Mexico",
+     city == "Col Partido Iglesias Juarez" ~ "Mexico",  
+    city == "Qionghai" ~ "China",
+    city == "Taiyuan" ~ "China",
+    city == "Weifang" ~ "China",
+    city == "Zunyi" ~ "China",
+    city == "Auckland" ~ "New Zealand",
+    city == "Queenstown" ~ "New Zealand",
+    city == "Bodrum" ~ "Turkey",
+    city == "Cesme" ~ "Turkey",
+    city == "Giresun" ~ "Turkey",
+    city == "Istanbul" ~ "Turkey",
+    city == "Abu Dhabi" ~ "UAE",
+    city == "Dubai" ~ "UAE",
+    city == "Santiago" ~ "Chile",
+    city == "Medellin" ~ "Colombia",
+    city == "Quito" ~ "Ecuador",
+    TRUE ~ NA_character_
+  ))
+```
+
+prep for ex 9 filtering out non US hotels
+
+``` r
+lq <- lq %>%
+  filter(country == "United States")
+```
+
+### Exercise 9
+
+“Which states have the most and fewest Denny’s locations? What about La
+Quinta? Is this surprising? Why or why not?”
+
+``` r
+dn %>%
+  count(state) %>%
+  arrange(desc(n))
+```
+
+    ## # A tibble: 51 × 2
+    ##    state     n
+    ##    <chr> <int>
+    ##  1 CA      403
+    ##  2 TX      200
+    ##  3 FL      140
+    ##  4 AZ       83
+    ##  5 IL       56
+    ##  6 NY       56
+    ##  7 WA       49
+    ##  8 OH       44
+    ##  9 MO       42
+    ## 10 PA       40
+    ## # ℹ 41 more rows
+
+``` r
+lq %>%
+  count(state) %>%
+  arrange(desc(n))
+```
+
+    ## # A tibble: 48 × 2
+    ##    state     n
+    ##    <chr> <int>
+    ##  1 TX      237
+    ##  2 FL       74
+    ##  3 CA       56
+    ##  4 GA       41
+    ##  5 TN       30
+    ##  6 OK       29
+    ##  7 LA       28
+    ##  8 CO       27
+    ##  9 NM       19
+    ## 10 NY       19
+    ## # ℹ 38 more rows
+
+Prep for exercise 10 “Next, let’s calculate which states have the most
+Denny’s locations per thousand square miles. This requires joinining
+information from the frequency tables you created in the previous set
+with information from the states data frame.
+
+First, we count how many observations are in each state, which will give
+us a data frame with two variables: state and n. Then, we join this data
+frame with the states data frame. However note that the variables in the
+states data frame that has the two-letter abbreviations is called
+abbreviation. So when we’re joining the two data frames we specify that
+the state variable from the Denny’s data should be matched by the
+abbreviation variable from the states data”
+
+``` r
+dn %>%
+  count(state) %>%
+  inner_join(states, by = c("state" = "abbreviation"))
+```
+
+    ## # A tibble: 51 × 4
+    ##    state     n name                     area
+    ##    <chr> <int> <chr>                   <dbl>
+    ##  1 AK        3 Alaska               665384. 
+    ##  2 AL        7 Alabama               52420. 
+    ##  3 AR        9 Arkansas              53179. 
+    ##  4 AZ       83 Arizona              113990. 
+    ##  5 CA      403 California           163695. 
+    ##  6 CO       29 Colorado             104094. 
+    ##  7 CT       12 Connecticut            5543. 
+    ##  8 DC        2 District of Columbia     68.3
+    ##  9 DE        1 Delaware               2489. 
+    ## 10 FL      140 Florida               65758. 
+    ## # ℹ 41 more rows
+
+``` r
+lq %>%
+  count(state) %>%
+  inner_join(states, by = c("state" = "abbreviation"))
+```
+
+    ## # A tibble: 48 × 4
+    ##    state     n name           area
+    ##    <chr> <int> <chr>         <dbl>
+    ##  1 AK        2 Alaska      665384.
+    ##  2 AL       16 Alabama      52420.
+    ##  3 AR       13 Arkansas     53179.
+    ##  4 AZ       18 Arizona     113990.
+    ##  5 CA       56 California  163695.
+    ##  6 CO       27 Colorado    104094.
+    ##  7 CT        6 Connecticut   5543.
+    ##  8 FL       74 Florida      65758.
+    ##  9 GA       41 Georgia      59425.
+    ## 10 IA        4 Iowa         56273.
+    ## # ℹ 38 more rows
+
+### Exercise 10
+
+“Which states have the most Denny’s locations per thousand square miles?
+What about La Quinta? Next, we put the two datasets together into a
+single data frame. However before we do so, we need to add an identifier
+variable. We’ll call this establishment and set the value to”Denny’s”
+and “La Quinta” for the dn and lq data frames, respectively.”
+
+``` r
+dn <- dn %>%
+  mutate(establishment = "Denny's")
+lq <- lq %>%
+  mutate(establishment = "La Quinta")
+
+dn_lq <- bind_rows(dn, lq)
+
+ggplot(dn_lq, mapping = aes(
+  x = longitude,
+  y = latitude,
+  color = establishment
+)) +
+  geom_point()
+```
+
+![](Lab-04---Visualizing-spatial-data_files/figure-gfm/ex10_most_dn_lq-1.png)<!-- -->
+\### Exercise 11 “Filter the data for observations in North Carolina
+only, and recreate the plot. You should also adjust the transparency of
+the points, by setting the alpha level, so that it’s easier to see the
+overplotted ones. Visually, does Mitch Hedberg’s joke appear to hold
+here?”
+
+``` r
+dn_lq %>%
+  filter(state == "NC") %>%
+  ggplot(mapping = aes(
+    x = longitude,
+    y = latitude,
+    color = establishment
+  )) +
+  geom_point(alpha = 0.7, size = 3) +
+  scale_color_viridis_d(option = "plasma") +
+  theme_minimal() +
+  labs(
+    title = "Denny's and La Quinta locations in North Carolina",
+    x = "Longitude",
+    y = "Latitude",
+    color = "Establishment"
+  ) +
+  theme(
+    legend.position = "right"
+  ) 
+```
+
+![](Lab-04---Visualizing-spatial-data_files/figure-gfm/ex11_NC_plot-1.png)<!-- -->
+Visually, it is hard to tell if the joke holds true statistically
+because there are far more Denny’s locations than La Quinta locations.
+However, most of the La Quinta locations are near or overlapping with
+Dennys locations.
+
+### Exercise 12
+
+“Now filter the data for observations in Texas only, and recreate the
+plot, with an appropriate alpha level. Visually, does Mitch Hedberg’s
+joke appear to hold here?”
+
+``` r
+dn_lq %>%
+  filter(state == "TX") %>%
+  ggplot(mapping = aes(
+    x = longitude,
+    y = latitude,
+    color = establishment
+  )) +
+  geom_point(alpha = 0.7, size = 1.5) +
+  scale_color_viridis_d(option = "plasma") +
+  theme_minimal() +
+  labs(
+    title = "Denny's and La Quinta locations in Texas",
+    x = "Longitude",
+    y = "Latitude",
+    color = "Establishment"
+  ) +
+  theme(
+    legend.position = "right"
+  ) 
+```
+
+![](Lab-04---Visualizing-spatial-data_files/figure-gfm/ex12_TX_plot-1.png)<!-- -->
+Again, it is hard to tell if the joke holds true because there are more
+of one establishment than the other (this time it is La Quintas).
+However, most of the Dennys locations are clustered around the La Quinta
+locations supporting the joke.
+
+Though it also seem that these are all clustered around large cities in
+Texas, such as Dallas in the northern part of the state, Houston in the
+south east part of the state, etc.
